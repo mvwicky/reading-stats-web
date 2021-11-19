@@ -1,3 +1,6 @@
+/* Yarn PnP workaround: see https://www.npmjs.com/package/@snowpack/plugin-typescript */
+const tsOptions = process.versions.pnp ? { tsc: "yarn pnpify tsc" } : {};
+
 /** @type {import("snowpack").SnowpackUserConfig } */
 export default {
   mount: {
@@ -7,13 +10,8 @@ export default {
   plugins: [
     "@snowpack/plugin-svelte",
     "@snowpack/plugin-dotenv",
-    [
-      "@snowpack/plugin-typescript",
-      {
-        /* Yarn PnP workaround: see https://www.npmjs.com/package/@snowpack/plugin-typescript */
-        ...(process.versions.pnp ? { tsc: "yarn pnpify tsc" } : {}),
-      },
-    ],
+    ["@snowpack/plugin-typescript", { ...tsOptions }],
+    // ["@snowpack/plugin-webpack", { htmlMinifierOptions: false }],
   ],
   routes: [
     /* Enable an SPA Fallback in development: */
@@ -21,7 +19,8 @@ export default {
   ],
   optimize: {
     /* Example: Bundle your final build: */
-    // "bundle": true,
+    bundle: false,
+    minify: true,
   },
   packageOptions: {
     /* ... */

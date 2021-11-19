@@ -1,3 +1,4 @@
+import { parse } from "date-fns";
 import localforage from "localforage";
 
 import readingData from "./reading-data-short.json";
@@ -17,27 +18,58 @@ export interface RawBook {
   finished: string | null;
 }
 
-export interface Book extends RawBook {
+export interface Book extends Omit<RawBook, "started" | "finished"> {
   id: number;
+  started: Date | null;
+  finished: Date | null;
 }
 
 export interface BookData {
   books: Book[];
 }
 
+const DATE_FMT = "yyyy-MM-dd";
+
+const STORE_VERSION = 3;
+const STORAGE = localforage.createInstance({
+  name: "reading-stats",
+  version: STORE_VERSION,
+});
+const VERSION_KEY = "store-version";
+
+async function storageReady(): Promise<void> {
+  await STORAGE.ready();
+  const storedVersion = await STORAGE.getItem<number>(VERSION_KEY);
+  if (storedVersion !== STORE_VERSION) {
+    await STORAGE.clear();
+    await STORAGE.setItem(VERSION_KEY, STORE_VERSION);
+  }
+}
+
+function parseDate(dateStr: string): Date {
+  return parse(dateStr, DATE_FMT, new Date());
+}
+
 export async function getBooks(): Promise<BookData> {
-  await localforage.ready();
-  let savedData = await localforage.getItem<BookData>(READING_DATA_KEY);
+  await storageReady();
+  let savedData = await STORAGE.getItem<BookData>(READING_DATA_KEY);
   if (savedData === null) {
     const data: Book[] = [];
     console.log("Saving data");
-    for (const book of readingData.books) {
-      data.push({ id: data.length, ...book });
+    for (const {
+      started: startStr,
+      finished: finishedStr,
+      ...book
+    } of readingData.books) {
+      const started = !startStr ? null : parseDate(startStr);
+      const finished = !finishedStr ? null : parseDate(finishedStr);
+
+      data.push({ id: data.length, started, finished, ...book });
     }
-    await localforage.setItem(READING_DATA_KEY, readingData);
     savedData = { books: data };
+    await STORAGE.setItem(READING_DATA_KEY, savedData);
   } else {
-    console.log(`Data found in ${localforage.driver()}`);
+    console.log(`Data found in ${STORAGE.driver()}`);
   }
   return savedData;
 }

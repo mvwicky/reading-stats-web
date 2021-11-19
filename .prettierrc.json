@@ -1,0 +1,16 @@
+{
+  "overrides": [
+    {
+      "files": ["public/index.html"],
+      "options": {
+        "printWidth": 120
+      }
+    },
+    {
+      "files": "**/*.svelte",
+      "options": {
+        "svelteSortOrder": "options-scripts-styles-markup"
+      }
+    }
+  ]
+}

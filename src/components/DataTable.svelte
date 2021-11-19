@@ -34,7 +34,11 @@
     text-align: left;
     border: 1px solid #dee2e6;
     border-top: none;
+    table-layout: fixed;
   }
+  /* th {
+    cursor: pointer;
+  } */
   th + th {
     border-left: 1px solid hsl(210, 14%, 79%);
   }
@@ -48,12 +52,12 @@
   <thead>
     <tr>
       {#each columns as column}
-        <th>{column}</th>
+        <th scope="col">{column}</th>
       {/each}
     </tr>
   </thead>
   <tbody>
-    {#each books as book, i}
+    {#each books as book, i (book.id)}
       <Row {book} on:readchange={makeReadChange(i)} />
     {/each}
   </tbody>
