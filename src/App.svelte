@@ -1,76 +1,50 @@
 <script lang="ts">
-  import {onMount} from 'svelte'
+  let showAddModal = false;
+  import { onMount } from "svelte";
 
-  let count: number = 0
-  onMount(() => {
-    const interval = setInterval(() => count++, 1000)
+  import Styles from "./components/Styles.svelte";
+  import AddBook from "./components/AddBook.svelte";
+  import DataTable from "./components/DataTable.svelte";
+
+  import { getBooks } from "./data/reading-data";
+  import { books as booksStore } from "./data/stores";
+
+  onMount(() => getBooks().then((data) => booksStore.set(data.books)));
+  function makeReadChange(i: number) {
     return () => {
-      clearInterval(interval)
-    }
-  })
+      console.log(i, $booksStore[i]);
+    };
+  }
 </script>
 
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-  }
-
-  .App {
+  main {
     text-align: center;
-  }
-
-  .App code {
-    background: #0002;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-
-  .App p {
-    margin: 0.4rem;
-  }
-
-  .App-header {
-    background-color: #f9f6f6;
-    color: #333;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    font-size: calc(10px + 2vmin);
+    margin: 0.5rem 0.5rem 1rem;
   }
-
-  .App-link {
-    color: #ff3e00;
-  }
-
-  .App-logo {
-    height: 36vmin;
-    pointer-events: none;
-    margin-bottom: 3rem;
-    animation: App-logo-spin infinite 1.6s ease-in-out alternate;
-  }
-
-  @keyframes App-logo-spin {
-    from {
-      transform: scale(1);
+  @media (min-width: 1200px) {
+    main {
+      margin: 0.5rem 1rem 2rem;
     }
-    to {
-      transform: scale(1.06);
-    }
+  }
+  h1 {
+    margin-bottom: 0;
   }
 </style>
 
-<div class="App">
-  <header class="App-header">
-    <img src="/logo.svg" class="App-logo" alt="logo"/>
-    <p>Edit <code>src/App.svelte</code> and save to reload.</p>
-    <p>Page has been open for <code>{count}</code> seconds.</p>
-    <p>
-      <a class="App-link" href="https://svelte.dev" target="_blank" rel="noopener noreferrer">
-        Learn Svelte
-      </a>
-    </p>
-  </header>
-</div>
+<Styles />
+<main>
+  <h1>Reading Stats</h1>
+  <div class="add-row">
+    <button id="add-button" on:click={() => (showAddModal = true)}
+      >Add Book</button
+    >
+  </div>
+  <DataTable books={$booksStore} />
+</main>
+{#if showAddModal}
+  <AddBook on:close={() => (showAddModal = false)} />
+{/if}
