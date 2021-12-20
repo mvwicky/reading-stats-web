@@ -1,23 +1,14 @@
 <script lang="ts">
-  import type { Book } from "src/data/reading-data";
+  import type { Book } from "../types";
+  import { columns } from "../table-def";
 
   import Row from "./Row.svelte";
-  import { books as booksStore } from "../data/stores";
 
   export let books: Book[];
-  const columns = [
-    "Title",
-    "Author",
-    "Year",
-    "Pages Read",
-    "Total Pages",
-    "%",
-    "Started",
-    "Finished",
-  ];
+
   function makeReadChange(i: number) {
     return () => {
-      console.log(i, $booksStore[i]);
+      console.log(i, books[i]);
     };
   }
 </script>
@@ -36,9 +27,9 @@
     border-top: none;
     table-layout: fixed;
   }
-  /* th {
+  th.sortable {
     cursor: pointer;
-  } */
+  }
   th + th {
     border-left: 1px solid hsl(210, 14%, 79%);
   }
@@ -48,17 +39,24 @@
   }
 </style>
 
-<table>
-  <thead>
-    <tr>
-      {#each columns as column}
-        <th scope="col">{column}</th>
+{#if books.length > 0}
+  <table class="data-table">
+    <thead>
+      <tr>
+        {#each columns as { title, sortable }}
+          <th scope="col" class:sortable={sortable ?? true}>
+            {title}
+            {#if sortable ?? true}
+              <small>(s)</small>
+            {/if}
+          </th>
+        {/each}
+      </tr>
+    </thead>
+    <tbody>
+      {#each books as book, i (book.id)}
+        <Row {book} on:readchange={makeReadChange(i)} />
       {/each}
-    </tr>
-  </thead>
-  <tbody>
-    {#each books as book, i (book.id)}
-      <Row {book} on:readchange={makeReadChange(i)} />
-    {/each}
-  </tbody>
-</table>
+    </tbody>
+  </table>
+{/if}

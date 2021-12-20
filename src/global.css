@@ -1,0 +1,27 @@
+:root {
+  --border-light: #dee2e6;
+
+  --valid-color: #34d399;
+  --invalid-color: #dc2626;
+}
+
+th,
+td {
+  padding: 0.5rem 0.33rem;
+  vertical-align: middle;
+  border-top: 1px solid var(--border-light);
+}
+
+button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #93c5fd;
+}
+
+main > * + * {
+  margin-top: 1rem;
+}

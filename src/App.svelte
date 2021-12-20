@@ -2,7 +2,6 @@
   let showAddModal = false;
   import { onMount } from "svelte";
 
-  import Styles from "./components/Styles.svelte";
   import AddBook from "./components/AddBook.svelte";
   import DataTable from "./components/DataTable.svelte";
 
@@ -10,11 +9,6 @@
   import { books as booksStore } from "./data/stores";
 
   onMount(() => getBooks().then((data) => booksStore.set(data.books)));
-  function makeReadChange(i: number) {
-    return () => {
-      console.log(i, $booksStore[i]);
-    };
-  }
 </script>
 
 <style>
@@ -33,15 +27,20 @@
   h1 {
     margin-bottom: 0;
   }
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
 
-<Styles />
 <main>
   <h1>Reading Stats</h1>
-  <div class="add-row">
+  <div class="button-row">
+    <span>&nbsp;</span>
     <button id="add-button" on:click={() => (showAddModal = true)}
       >Add Book</button
     >
+    <button id="reset-button">Reset</button>
   </div>
   <DataTable books={$booksStore} />
 </main>

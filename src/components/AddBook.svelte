@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from "svelte";
-  import type { Book } from "../data/reading-data";
+  import type { Book } from "../types";
   import { books } from "../data/stores";
 
   function toBook(pBook: PartialBook, id: number): Book | null {
@@ -59,15 +59,12 @@
       if (!activeElement) {
         return;
       }
-      console.log({ activeElement });
       let index = tabbable.indexOf(activeElement);
-      console.log({ index });
       if (index === -1 && e.shiftKey) {
         index = 0;
       }
       index += tabbable.length + (e.shiftKey ? -1 : 1);
       index %= tabbable.length;
-      console.log({ index });
       (tabbable[index] as HTMLElement).focus();
       e.preventDefault();
     }
