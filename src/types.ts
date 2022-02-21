@@ -1,3 +1,10 @@
+type SnowpackEnvKey<K extends string> = `SNOWPACK_PUBLIC_${Uppercase<K>}`;
+interface SnowpackEnv {
+  MODE: string;
+  NODE_ENV: string;
+  [key: SnowpackEnvKey<string>]: string | undefined;
+}
+
 export interface RawBook {
   title: string;
   author: string;

@@ -24,7 +24,7 @@
     maximumFractionDigits: 0,
   });
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ readchange: number }>();
   const readChange = () => dispatch("readchange", book.pages_read);
 
   function pgReadChange(event: Event) {
@@ -106,7 +106,6 @@
     {:else if book.started}
       <input
         type="date"
-        required
         bind:value={finishedValue}
         on:change={onFinishChange}
       />
