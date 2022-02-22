@@ -1,35 +1,6 @@
-import localforage from "localforage";
-
 import { parseDate } from "../dt";
 import type { BookData, Book, RawBook } from "../types";
-
-const READING_DATA_KEY = "reading-data";
-const STORE_VERSION = 5;
-const VERSION_KEY = "store-version";
-
-const STORAGE = localforage.createInstance({
-  name: "reading-stats",
-  version: STORE_VERSION,
-});
-
-async function storageReady(): Promise<void> {
-  await STORAGE.ready();
-  const storedVersion = await STORAGE.getItem<number>(VERSION_KEY);
-  if (storedVersion !== STORE_VERSION) {
-    console.log(`Clearing outdated data: ${storedVersion} < ${STORE_VERSION}`);
-    await STORAGE.clear();
-    await STORAGE.setItem(VERSION_KEY, STORE_VERSION);
-  }
-}
-
-// const bookHandler: ProxyHandler<Book> = {
-//   get: function (target, p, receiver) {
-//     return Reflect.get(target, p, receiver);
-//   },
-//   set: function(target, p, value, receiver) {
-//     return Reflect.set(target, p, value, receiver)
-//   }
-// };
+import { db } from "./db";
 
 async function loadDefaultData(): Promise<{ books: RawBook[] }> {
   if (import.meta.env.SNOWPACK_PUBLIC_USE_DEFAULT_DATA) {
@@ -39,34 +10,26 @@ async function loadDefaultData(): Promise<{ books: RawBook[] }> {
   return { books: [] };
 }
 
-function makeProxyHandler(
-  booksData: Book[],
-  book: Book,
-  i: number
-): ProxyHandler<Book> {
-  return {
-    get: function (target, p, receiver) {
-      return Reflect.get(target, p, receiver);
-    },
+export function bookProxy(book: Book) {
+  const { id } = book;
+  const handler: ProxyHandler<Book> = {
     set: function (target, p, value, receiver) {
-      return Reflect.set(target, p, value, receiver);
+      console.log(id, p, value);
+      const r = Reflect.set(target, p, value, receiver);
+      db.then((d) => d.put("books", target));
+      return r;
     },
   };
-}
-
-// export function bookId(book: Book) {}
-
-export function bookStorageKey(book: Book): string {
-  return `${READING_DATA_KEY}-${book.id}`;
+  return new Proxy(book, handler);
 }
 
 export async function getBooks(): Promise<BookData> {
-  await storageReady();
-  let savedData = await STORAGE.getItem<BookData>(READING_DATA_KEY);
-  if (!savedData) {
+  const books = await (await db).getAll("books");
+  if (!books.length) {
     const readingData = await loadDefaultData();
-    const data: Book[] = [];
+    const tx = (await db).transaction("books", "readwrite");
     console.log("Saving data");
+    const addPromises: Promise<unknown>[] = [];
     for (const {
       started: startStr,
       finished: finishedStr,
@@ -74,18 +37,13 @@ export async function getBooks(): Promise<BookData> {
     } of readingData.books) {
       const started = !startStr ? null : parseDate(startStr);
       const finished = !finishedStr ? null : parseDate(finishedStr);
-      const realBook: Book = { id: data.length, started, finished, ...book };
-      data.push(realBook);
+      const realBook = { id: books.length, started, finished, ...book };
+      books.push(realBook);
+      addPromises.push(tx.store.add(realBook));
     }
-    savedData = { books: data };
-    await STORAGE.setItem(READING_DATA_KEY, savedData);
+    await Promise.all(addPromises.concat([tx.done]));
   } else {
-    console.log(`Data found in ${STORAGE.driver()}`);
+    console.log(`Data found`);
   }
-  const proxiedBooks = savedData.books.map(
-    (book, index, arr) => new Proxy(book, makeProxyHandler(arr, book, index))
-  );
-  return { books: proxiedBooks };
+  return { books: books.map(bookProxy) };
 }
-
-// export function updateBook(data, book) {}

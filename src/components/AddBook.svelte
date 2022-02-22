@@ -2,6 +2,16 @@
   import { createEventDispatcher, onDestroy } from "svelte";
   import type { Book } from "../types";
   import { books } from "../data/stores";
+  import { bookProxy } from "../data/reading-data";
+  import { db } from "../data/db";
+
+  interface PartialBook {
+    title: string | undefined;
+    author: string | undefined;
+    year: number | undefined;
+    total_pages: number | undefined;
+    pages_read: number;
+  }
 
   function toBook(pBook: PartialBook, id: number): Book | null {
     const { title, author, year, total_pages, pages_read } = pBook;
@@ -35,7 +45,8 @@
       books.update((b) => {
         const newBook = toBook(book, b.length + 1);
         if (newBook) {
-          return b.concat([newBook]);
+          db.then((d) => d.add("books", newBook));
+          return b.concat([bookProxy(newBook)]);
         }
         return b;
       });
@@ -73,14 +84,6 @@
     typeof document !== "undefined" && document.activeElement;
   if (previouslyFocused) {
     onDestroy(() => (previouslyFocused as HTMLElement).focus());
-  }
-
-  interface PartialBook {
-    title: string | undefined;
-    author: string | undefined;
-    year: number | undefined;
-    total_pages: number | undefined;
-    pages_read: number;
   }
 
   let book: PartialBook = {
