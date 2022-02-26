@@ -2,9 +2,11 @@
   "private": true,
   "scripts": {
     "build": "snowpack build",
+    "dev": "snowpack dev",
     "prepare": "husky install",
     "start": "snowpack dev",
-    "test": "web-test-runner \"src/**/*.test.ts\""
+    "test": "web-test-runner \"src/**/*.test.ts\"",
+    "lint": "eslint ."
   },
   "dependencies": {
     "svelte": "^3.37.0"
@@ -23,6 +25,9 @@
     "@web/test-runner": "^0.13.3",
     "chai": "^4.3.4",
     "date-fns": "^2.26.0",
+    "eslint": "^8.9.0",
+    "eslint-config-wherewasigoing": "^1.1.0",
+    "eslint-plugin-svelte3": "^3.4.1",
     "husky": "^7.0.0",
     "idb": "^7.0.0",
     "prettier": "^2.4.1",

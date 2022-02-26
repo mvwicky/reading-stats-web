@@ -1,20 +1,20 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from "svelte";
-  import type { Book } from "../types";
-  import { books } from "../data/stores";
-  import { bookProxy } from "../data/reading-data";
+
   import { db } from "../data/db";
+  import { bookProxy } from "../data/reading-data";
+  import { books } from "../data/stores";
+  import type { Book } from "../types";
 
   interface PartialBook {
     title: string | undefined;
     author: string | undefined;
     year: number | undefined;
     total_pages: number | undefined;
-    pages_read: number;
   }
 
   function toBook(pBook: PartialBook, id: number): Book | null {
-    const { title, author, year, total_pages, pages_read } = pBook;
+    const { title, author, year, total_pages } = pBook;
     if (
       typeof title !== "string" ||
       typeof author !== "string" ||
@@ -29,7 +29,7 @@
       author,
       year,
       total_pages,
-      pages_read,
+      pages_read: 0,
       off: null,
       finished: null,
       location: null,
@@ -91,7 +91,6 @@
     author: undefined,
     year: undefined,
     total_pages: undefined,
-    pages_read: 0,
   };
 
   $: bookValid = toBook({ ...book }, 0) !== null;

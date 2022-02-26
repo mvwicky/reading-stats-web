@@ -1,9 +1,9 @@
 import { parseDate } from "../dt";
-import type { BookData, Book, RawBook } from "../types";
+import type { Book, BookData, RawBook } from "../types";
 import { db } from "./db";
 
 async function loadDefaultData(): Promise<{ books: RawBook[] }> {
-  if (import.meta.env.SNOWPACK_PUBLIC_USE_DEFAULT_DATA) {
+  if (import.meta.env.MODE !== "production") {
     const { default: rdr } = await import("./reading-data-short.json");
     return rdr as { books: RawBook[] };
   }

@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { Book } from "../types";
   import { columns } from "../table-def";
-
+  import type { Book } from "../types";
   import Row from "./Row.svelte";
 
   export let books: Book[];
@@ -23,8 +22,7 @@
   table {
     border-collapse: collapse;
     text-align: left;
-    border: 1px solid #dee2e6;
-    border-top: none;
+    border: 1px solid hsl(210, 14%, 75%);
     table-layout: fixed;
   }
   th.sortable {
@@ -36,6 +34,7 @@
   thead th {
     vertical-align: bottom;
     border-bottom: 2px solid hsl(210, 14%, 68%);
+    border-top: none;
   }
 </style>
 

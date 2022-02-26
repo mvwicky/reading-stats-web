@@ -1,12 +1,13 @@
 <script lang="ts">
-  let showAddModal = false;
   import { onMount } from "svelte";
 
   import AddBook from "./components/AddBook.svelte";
   import DataTable from "./components/DataTable.svelte";
-
   import { getBooks } from "./data/reading-data";
   import { books as booksStore } from "./data/stores";
+
+  let showAddModal = false;
+  let showStatsModal = false;
 
   onMount(() => getBooks().then((data) => booksStore.set(data.books)));
 </script>
@@ -36,13 +37,18 @@
 <main>
   <h1>Reading Stats</h1>
   <div class="button-row">
-    <span>&nbsp;</span>
     <button id="add-button" on:click={() => (showAddModal = true)}
       >Add Book</button
     >
-    <button id="reset-button">Reset</button>
+    <button id="stats-button" on:click={() => (showStatsModal = true)}
+      >Stats</button
+    >
   </div>
   <DataTable books={$booksStore} />
+  <div class="button-row">
+    <span>&nbsp;</span>
+    <button id="reset-button">Reset</button>
+  </div>
 </main>
 {#if showAddModal}
   <AddBook on:close={() => (showAddModal = false)} />

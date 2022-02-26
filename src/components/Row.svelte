@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { format } from "date-fns";
-  import type { Book } from "../types";
+  import { createEventDispatcher } from "svelte";
+
   import { dateGuard, parseDate } from "../dt";
+  import type { Book } from "../types";
 
   export let book: Book;
 
@@ -26,10 +27,6 @@
 
   const dispatch = createEventDispatcher<{ readchange: number }>();
   const readChange = () => dispatch("readchange", book.pages_read);
-
-  function pgReadChange(event: Event) {
-    console.log(event);
-  }
 
   function onStartChange() {
     if (startedValue) {
@@ -74,7 +71,7 @@
 </style>
 
 <tr>
-  <td><small>({book.id})</small> {book.title}</td>
+  <td>{book.title}</td>
   <td>{book.author}</td>
   <td>{book.year}</td>
   <td>
