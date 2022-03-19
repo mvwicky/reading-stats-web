@@ -2,42 +2,34 @@
   import { format } from "date-fns";
   import { createEventDispatcher } from "svelte";
 
-  import { dateGuard, parseDate } from "../dt";
+  import { augmentBook } from "../data/augment";
   import type { Book } from "../types";
+  import { dateGuard, parseDate } from "../utils/dt";
+  import { pctFmt, ppdFmt, wholeNumFmt } from "../utils/fmt";
 
   export let book: Book;
+
+  $: augBook = augmentBook(book);
 
   $: startedStr = dateGuard(book.started)
     ? format(book.started, "yyyy-MM-dd")
     : "";
 
-  let finishedValue: string;
-  let startedValue: string;
+  const dateValues: { finished: string; started: string } = {
+    finished: "",
+    started: "",
+  };
 
-  const pctFmt = new Intl.NumberFormat(undefined, {
-    style: "percent",
-    maximumFractionDigits: 1,
-    minimumFractionDigits: 1,
-  });
-
-  const numFmt = new Intl.NumberFormat(undefined, {
-    useGrouping: true,
-    maximumFractionDigits: 0,
-  });
+  function onDateChange(name: "finished" | "started") {
+    return () => {
+      if (dateValues[name]) {
+        book[name] = parseDate(dateValues[name]);
+      }
+    };
+  }
 
   const dispatch = createEventDispatcher<{ readchange: number }>();
   const readChange = () => dispatch("readchange", book.pages_read);
-
-  function onStartChange() {
-    if (startedValue) {
-      book.started = parseDate(startedValue);
-    }
-  }
-  function onFinishChange() {
-    if (finishedValue) {
-      book.finished = parseDate(finishedValue);
-    }
-  }
 </script>
 
 <style>
@@ -51,7 +43,7 @@
     border-left: 1px solid var(--border-light);
   }
   input {
-    --ring-color: #00000000;
+    --ring-color: hsla(0, 0%, 0%, 0);
     border-radius: 4px;
     box-shadow: 0 0 0 2px var(--ring-color);
   }
@@ -65,7 +57,7 @@
     --ring-color: var(--invalid-color);
   }
   input:focus-visible {
-    --ring-color: #9ca3af;
+    --ring-color: hsl(218, 11%, 65%);
     outline: none;
   }
 </style>
@@ -85,16 +77,20 @@
         on:change={readChange}
       />
     {:else if book.finished}
-      {book.pages_read}
+      {wholeNumFmt(book.pages_read)}
     {/if}
   </td>
-  <td>{numFmt.format(book.total_pages)}</td>
-  <td>{pctFmt.format(book.pages_read / book.total_pages)}</td>
+  <td>{wholeNumFmt(book.total_pages)}</td>
+  <td>{pctFmt(augBook.pct)}</td>
   <td>
     {#if book.started}
       {startedStr}
     {:else}
-      <input type="date" bind:value={startedValue} on:change={onStartChange} />
+      <input
+        type="date"
+        bind:value={dateValues.started}
+        on:change={onDateChange("started")}
+      />
     {/if}
   </td>
   <td>
@@ -103,9 +99,15 @@
     {:else if book.started}
       <input
         type="date"
-        bind:value={finishedValue}
-        on:change={onFinishChange}
+        bind:value={dateValues.finished}
+        on:change={onDateChange("finished")}
       />
     {/if}
+  </td>
+  <td>
+    {#if augBook.days !== null}{augBook.days}{/if}
+  </td>
+  <td>
+    {#if augBook.pages_per_day !== null}{ppdFmt(augBook.pages_per_day)}{/if}
   </td>
 </tr>

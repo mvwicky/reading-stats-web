@@ -1,8 +1,8 @@
 :root {
-  --border-light: #dee2e6;
+  --border-light: hsl(210, 14%, 89%);
 
-  --valid-color: #34d399;
-  --invalid-color: #dc2626;
+  --valid-color: hsl(158, 64%, 52%);
+  --invalid-color: hsl(0, 72%, 51%);
 }
 
 th,
@@ -19,7 +19,7 @@ button {
 }
 
 button:hover {
-  background-color: #93c5fd;
+  background-color: hsl(212, 96%, 78%);
 }
 
 main > * + * {

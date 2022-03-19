@@ -24,11 +24,18 @@ export interface Book extends Omit<RawBook, "started" | "finished"> {
   finished: Date | null;
 }
 
+export interface AugBook extends Book {
+  pct: number;
+  days: number | null;
+  pages_per_day: number | null;
+}
+
 export interface BookData {
   books: Book[];
 }
 
-export interface ColumnDef {
-  title: string;
-  sortable?: boolean;
+export interface Stat {
+  name: string;
+  value: number;
+  formatter?: (val: number) => string;
 }

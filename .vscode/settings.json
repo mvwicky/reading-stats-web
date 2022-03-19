@@ -9,6 +9,7 @@
     "**/Thumbs.db": true,
     "**/node_modules": true
   },
-  "editor.codeActionsOnSave": { "source.fixAll": true },
-  "[svelte]": { "editor.codeActionsOnSave": { "source.fixAll": false } }
+  "editor.codeActionsOnSave": { "source.fixAll": false },
+  "[svelte]": { "editor.codeActionsOnSave": { "source.fixAll": true } },
+  "[typescript]": { "editor.codeActionsOnSave": { "source.fixAll": true } }
 }

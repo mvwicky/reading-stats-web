@@ -1,7 +1,6 @@
 import { render } from "@testing-library/svelte";
 import { expect } from "chai";
 
-//@ts-expect-error
 import App from "./App.svelte";
 
 describe("<App>", () => {

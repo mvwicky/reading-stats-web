@@ -1,4 +1,7 @@
-import type { ColumnDef } from "./types";
+export interface ColumnDef {
+  title: string;
+  sortable?: boolean;
+}
 
 export const columns: Readonly<ColumnDef[]> = [
   { title: "Title" },
@@ -9,4 +12,6 @@ export const columns: Readonly<ColumnDef[]> = [
   { title: "%", sortable: false },
   { title: "Started" },
   { title: "Finished" },
+  { title: "Days" },
+  { title: "Pages/Day" },
 ] as const;

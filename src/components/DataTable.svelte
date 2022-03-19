@@ -1,13 +1,14 @@
 <script lang="ts">
+  import { books } from "../data/stores";
   import { columns } from "../table-def";
-  import type { Book } from "../types";
+  import Arrow from "./Arrow.svelte";
   import Row from "./Row.svelte";
 
-  export let books: Book[];
+  let sortedCol: number | null = null;
 
   function makeReadChange(i: number) {
     return () => {
-      console.log(i, books[i]);
+      console.log(i, $books[i]);
     };
   }
 </script>
@@ -17,7 +18,7 @@
     font-size: 0.9rem;
   }
   thead {
-    background-color: #e9ecef;
+    background-color: hsl(210, 16%, 93%);
   }
   table {
     border-collapse: collapse;
@@ -38,22 +39,20 @@
   }
 </style>
 
-{#if books.length > 0}
+{#if $books.length > 0}
   <table class="data-table">
     <thead>
       <tr>
-        {#each columns as { title, sortable }}
+        {#each columns as { title, sortable }, i}
           <th scope="col" class:sortable={sortable ?? true}>
             {title}
-            {#if sortable ?? true}
-              <small>(s)</small>
-            {/if}
+            <Arrow size="14" hide={i !== sortedCol} />
           </th>
         {/each}
       </tr>
     </thead>
     <tbody>
-      {#each books as book, i (book.id)}
+      {#each $books as book, i (book.id)}
         <Row {book} on:readchange={makeReadChange(i)} />
       {/each}
     </tbody>

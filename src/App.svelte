@@ -3,13 +3,16 @@
 
   import AddBook from "./components/AddBook.svelte";
   import DataTable from "./components/DataTable.svelte";
+  import Stats from "./components/Stats.svelte";
   import { getBooks } from "./data/reading-data";
-  import { books as booksStore } from "./data/stores";
+  import { books } from "./data/stores";
 
-  let showAddModal = false;
-  let showStatsModal = false;
+  const modals: { add: boolean; stats: boolean } = {
+    add: false,
+    stats: false,
+  };
 
-  onMount(() => getBooks().then((data) => booksStore.set(data.books)));
+  onMount(() => getBooks().then((data) => books.set(data.books)));
 </script>
 
 <style>
@@ -37,19 +40,22 @@
 <main>
   <h1>Reading Stats</h1>
   <div class="button-row">
-    <button id="add-button" on:click={() => (showAddModal = true)}
+    <button id="add-button" on:click={() => (modals.add = true)}
       >Add Book</button
     >
-    <button id="stats-button" on:click={() => (showStatsModal = true)}
+    <button id="stats-button" on:click={() => (modals.stats = true)}
       >Stats</button
     >
   </div>
-  <DataTable books={$booksStore} />
+  <DataTable />
   <div class="button-row">
     <span>&nbsp;</span>
     <button id="reset-button">Reset</button>
   </div>
 </main>
-{#if showAddModal}
-  <AddBook on:close={() => (showAddModal = false)} />
+{#if modals.add}
+  <AddBook on:close={() => (modals.add = false)} />
+{/if}
+{#if modals.stats}
+  <Stats on:close={() => (modals.stats = false)} />
 {/if}

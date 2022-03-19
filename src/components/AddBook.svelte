@@ -1,10 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from "svelte";
 
+  import { bookProxy } from "../data/book-proxy";
   import { db } from "../data/db";
-  import { bookProxy } from "../data/reading-data";
   import { books } from "../data/stores";
   import type { Book } from "../types";
+  import { makeHandleKeydown } from "../utils/handle-keydown";
 
   interface PartialBook {
     title: string | undefined;
@@ -56,30 +57,6 @@
 
   let modal: HTMLElement;
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      close();
-      return;
-    }
-    if (e.key === "Tab") {
-      const tabbable = [...modal.querySelectorAll("*")].filter(
-        (n) => (n as HTMLElement).tabIndex >= 0
-      );
-      console.log(tabbable.map((e) => e.getAttribute("tab-index")));
-      const { activeElement } = document;
-      if (!activeElement) {
-        return;
-      }
-      let index = tabbable.indexOf(activeElement);
-      if (index === -1 && e.shiftKey) {
-        index = 0;
-      }
-      index += tabbable.length + (e.shiftKey ? -1 : 1);
-      index %= tabbable.length;
-      (tabbable[index] as HTMLElement).focus();
-      e.preventDefault();
-    }
-  };
   const previouslyFocused =
     typeof document !== "undefined" && document.activeElement;
   if (previouslyFocused) {
@@ -98,7 +75,7 @@
 
 <style>
   .modal-bg {
-    background: rgba(0, 0, 0, 0.3);
+    background: hsla(0, 0%, 0%, 0.3);
     height: 100%;
     left: 0;
     margin: 0;
@@ -117,7 +94,7 @@
     transform: translate(-50%, -50%);
     padding: 1em;
     border-radius: 0.2em;
-    background: #fff;
+    background: hsl(0, 0%, 100%);
   }
   .form-group {
     display: flex;
@@ -132,7 +109,7 @@
   }
   button[disabled] {
     color: #555;
-    background-color: #80808085;
+    background-color: hsla(0, 0%, 50%, 0.522);
   }
   hr {
     height: 0;
@@ -145,15 +122,9 @@
   .button-row > * + * {
     margin-left: 1.5em;
   }
-  /* input {
-    border: none;
-  } */
-  /* .valid {
-    box-shadow: inset 0 0 0 3px #00ff00;
-  } */
 </style>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keydown={makeHandleKeydown(modal)} />
 
 <div class="modal-bg" on:click={close} />
 <div class="modal" aria-modal="true" bind:this={modal}>

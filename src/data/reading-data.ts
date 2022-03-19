@@ -1,5 +1,6 @@
-import { parseDate } from "../dt";
-import type { Book, BookData, RawBook } from "../types";
+import type { BookData, RawBook } from "../types";
+import { parseDate } from "../utils/dt";
+import { bookProxy } from "./book-proxy";
 import { db } from "./db";
 
 async function loadDefaultData(): Promise<{ books: RawBook[] }> {
@@ -8,19 +9,6 @@ async function loadDefaultData(): Promise<{ books: RawBook[] }> {
     return rdr as { books: RawBook[] };
   }
   return { books: [] };
-}
-
-export function bookProxy(book: Book) {
-  const { id } = book;
-  const handler: ProxyHandler<Book> = {
-    set: function (target, p, value, receiver) {
-      console.log(id, p, value);
-      const r = Reflect.set(target, p, value, receiver);
-      db.then((d) => d.put("books", target));
-      return r;
-    },
-  };
-  return new Proxy(book, handler);
 }
 
 export async function getBooks(): Promise<BookData> {
