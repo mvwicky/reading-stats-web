@@ -16,8 +16,10 @@
     : "";
 
   const dateValues: { finished: string; started: string } = {
-    finished: "",
-    started: "",
+    finished: dateGuard(book.finished)
+      ? format(book.finished, "yyyy-MM-dd")
+      : "",
+    started: dateGuard(book.started) ? format(book.started, "yyyy-MM-dd") : "",
   };
 
   function onDateChange(name: "finished" | "started") {
@@ -60,6 +62,12 @@
     --ring-color: hsl(218, 11%, 65%);
     outline: none;
   }
+  td.finished {
+    background-color: var(--percentile-100);
+  }
+  td.not-started {
+    background-color: var(--percentile-0);
+  }
 </style>
 
 <tr>
@@ -81,9 +89,16 @@
     {/if}
   </td>
   <td>{wholeNumFmt(book.total_pages)}</td>
-  <td>{pctFmt(augBook.pct)}</td>
+  <td class:finished={augBook.pct === 1} class:not-started={augBook.pct === 0}
+    >{#if book.started}{pctFmt(augBook.pct)}{/if}</td
+  >
   <td>
-    {#if book.started}
+    <input
+      type="date"
+      bind:value={dateValues.started}
+      on:change={onDateChange("started")}
+    />
+    <!-- {#if book.started}
       {startedStr}
     {:else}
       <input
@@ -91,10 +106,17 @@
         bind:value={dateValues.started}
         on:change={onDateChange("started")}
       />
-    {/if}
+    {/if} -->
   </td>
   <td>
-    {#if book.finished}
+    {#if book.started}
+      <input
+        type="date"
+        bind:value={dateValues.finished}
+        on:change={onDateChange("finished")}
+      />
+    {/if}
+    <!-- {#if book.finished}
       {format(book.finished, "yyyy-MM-dd")}
     {:else if book.started}
       <input
@@ -102,7 +124,7 @@
         bind:value={dateValues.finished}
         on:change={onDateChange("finished")}
       />
-    {/if}
+    {/if} -->
   </td>
   <td>
     {#if augBook.days !== null}{augBook.days}{/if}

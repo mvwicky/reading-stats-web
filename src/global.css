@@ -1,8 +1,15 @@
 :root {
   --border-light: hsl(210, 14%, 89%);
+  --border-dark: hsl(210, 14%, 68%);
 
   --valid-color: hsl(158, 64%, 52%);
   --invalid-color: hsl(0, 72%, 51%);
+
+  --percentile-0: hsl(5, 70%, 68%);
+  --percentile-50: hsl(44, 100%, 70%);
+  --percentile-100: hsl(151, 42%, 54%);
+
+  --bg-dark: hsl(210, 16%, 93%);
 }
 
 th,

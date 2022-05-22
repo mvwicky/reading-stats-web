@@ -5,6 +5,8 @@ interface SnowpackEnv {
   [key: SnowpackEnvKey<string>]: string | undefined;
 }
 
+export type SortDir = "asc" | "desc";
+
 export interface RawBook {
   title: string;
   author: string;

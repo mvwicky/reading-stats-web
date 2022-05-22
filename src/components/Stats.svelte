@@ -16,10 +16,12 @@
     border-collapse: collapse;
     text-align: left;
     width: 100%;
+    border: 1px solid var(--border-light);
   }
   th {
     font-size: 0.9rem;
-    border-right: 1px solid var(--border-light);
+    border-right: 2px solid var(--border-dark);
+    background-color: var(--bg-dark);
   }
 </style>
 
